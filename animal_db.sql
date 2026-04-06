@@ -3,13 +3,12 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 01, 2026 at 09:38 PM
+-- Generation Time: Apr 06, 2026 at 09:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -20,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `animal_db`
 --
+CREATE DATABASE IF NOT EXISTS `animal_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `animal_db`;
 
 -- --------------------------------------------------------
 
@@ -35,6 +36,17 @@ CREATE TABLE `Animals` (
   `Age` int(11) DEFAULT NULL,
   `Adopted` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `Animals`
+--
+
+INSERT INTO `Animals` (`Animal_ID`, `Name`, `Species`, `Breed`, `Age`, `Adopted`) VALUES
+(1, 'Tobias', 'Cat', 'Siamese', 3, 0),
+(2, 'Sparky', 'Dog', 'Australian Shepherd', 6, 1),
+(3, 'George', 'Hamster', 'Syrian', 1, 0),
+(4, 'Titan', 'Cat', 'Tabby', 7, 1),
+(5, 'Lola', 'Dog', 'German Shepherd', 2, 0);
 
 --
 -- Indexes for dumped tables
@@ -54,7 +66,7 @@ ALTER TABLE `Animals`
 -- AUTO_INCREMENT for table `Animals`
 --
 ALTER TABLE `Animals`
-  MODIFY `Animal_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Animal_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
