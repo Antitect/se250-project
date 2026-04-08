@@ -27,6 +27,23 @@ export default createStore({
       species.sort();
       return species;
     },
+    getBreedBySpeices(state) {
+      let breedBySpecies = {};
+      state.animals.forEach(animal => {
+        if (!breedBySpecies[animal.Species]) {
+          breedBySpecies[animal.Species] = [];
+        }
+        if (!breedBySpecies[animal.Species].includes(animal.Breed)) {
+          breedBySpecies[animal.Species].push(animal.Breed);
+        }
+      });
+
+      for (let species in breedBySpecies) {
+        breedBySpecies[species].sort();
+      }
+
+      return breedBySpecies;
+    },
     sortedAnimals(state) {
       let sorted = [...state.animals];
       sorted.sort((a, b) => a.Name > b.Name ? 1 : -1);

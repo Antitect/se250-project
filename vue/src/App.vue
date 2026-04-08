@@ -1,13 +1,9 @@
 <template>
   <header>
-    <h1>Pet Shelter</h1>
+    <h1><a href="/">Pet Shelter</a></h1>
   </header>
-  <nav style="display:none;">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
   <div>
-  <router-view/>
+    <router-view/>
   </div>
 </template>
 
@@ -22,6 +18,15 @@ export default {
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1 {
+  margin-bottom: 0rem;
+}
+
 header {
   background-color: var(--black);
   color: white;
@@ -33,6 +38,12 @@ header {
   max-width: 800px;
   width: 80%;
   margin: auto;
+}
+
+@media screen and (max-width: 800px) {
+  #app > div {
+    width: 100%;
+  }
 }
 </style>
 
@@ -77,5 +88,12 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+@media screen and (max-width: 800px) {
+  button, input, select, option {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
 }
 </style>

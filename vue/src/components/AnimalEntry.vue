@@ -2,27 +2,47 @@
   <div class="animal-entry" :even="even">
     <h3>{{ animal.Name }}</h3>
     <p>Age: {{ animal.Age }}</p>
-    <p :class="[animal.Adopted ? 'adopted' : 'available']">Status: {{ animal.Adopted ? 'Adopted' : 'Available' }}</p>
-    <button @click="deleteAnimal">Delete</button>
-    <p>Species: {{ animal.Species }}</p>
-    <p>Breed: {{ animal.Breed }}</p>
-    <p></p>
-    <button v-if="animal.Adopted" @click="toggleAdopted(animal)">Returned</button>
-    <button v-else @click="toggleAdopted(animal)">Adopted</button>
+    <p :class="[animal.Adopted ? 'adopted' : 'available']">{{ animal.Adopted ? 'Adopted' : 'Available' }}</p>
+    <button @click="deleteAnimal" class="deletebutton">Delete</button>
+    <p class="mobile-only">{{ animal.Species }}/{{ animal.Breed }}</p>
+    <p class="no-mobile">Species: {{ animal.Species }}</p>
+    <p class="no-mobile">Breed: {{ animal.Breed }}</p>
+    <p class="none"></p>
+    <button v-if="animal.Adopted" class="returnbutton" @click="toggleAdopted(animal)">Return</button>
+    <button class="adoptbutton" v-else @click="toggleAdopted(animal)">Adopt</button>
+  </div>
+  <div class="delete_dialog" v-if="showDeleteDialog">
+    <div class="delete_dialog_content">
+      <p>Are you sure you want to delete {{ animal.Name }}?</p>
+      <button @click="confirmDelete">Yes</button>
+      <button @click="cancelDelete">No</button>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      showDeleteDialog: false
+    }
+  },
   props: ['animal', 'even'],
   methods: {
     deleteAnimal() {
-      this.$store.dispatch('deleteAnimal', this.animal.Animal_ID);
+      this.showDeleteDialog = true;
     },
     toggleAdopted(animal) {
       let updatedAnimal = { ...animal, Adopted: !animal.Adopted };
       this.$store.dispatch('deleteAnimal', animal.Animal_ID);
       this.$store.dispatch('addAnimal', updatedAnimal);
+    },
+    confirmDelete() {
+      this.$store.dispatch('deleteAnimal', this.animal.Animal_ID);
+      this.showDeleteDialog = false;
+    },
+    cancelDelete() {
+      this.showDeleteDialog = false;
     }
   }
 }
@@ -54,4 +74,98 @@ div > * {
   color: green;
 }
 
+.deletebutton, .returnbutton, .delete_dialog_content button{
+  background-color: var(--red);
+  color: var(--white);
+  border-radius: 5px;
+}
+
+.adoptbutton, .delete_dialog_content > button:last-child {
+  background-color: green;
+  color: var(--white);
+  border-radius: 5px;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.delete_dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete_dialog_content {
+  background-color: var(--white);
+  padding: 20px;
+  border-radius: 5px;
+  display: flex;
+  max-width: calc(90vw - 40px);
+  width: fit-content;
+  flex-wrap: wrap;
+  gap: 1ch;
+}
+
+.delete_dialog_content p {
+  display: block;
+  margin: 0;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.delete_dialog_content button {
+  max-width: 50%;
+  flex-grow: 1;
+}
+
+@media screen and (max-width: 800px) {
+  .mobile-only {
+    display: block;
+  }
+  .no-mobile {
+    display: none;
+  }
+
+  .animal-entry {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas: "name name name age age age"
+                        "speicies species species status status status"
+                        ". delete delete adopt adopt none";
+  }
+
+  h3 {
+    grid-area: name;
+  }
+
+  .animal-entry > p:nth-child(2) {
+    grid-area: age;
+  }
+
+  .animal-entry > p:nth-child(3) {
+    grid-area: status;
+  }
+
+  p.mobile-only {
+    grid-area: species;
+  }
+
+  .deletebutton {
+    grid-area: delete;
+  }
+
+  .adoptbutton, .returnbutton {
+    grid-area: adopt;
+  }
+
+  .none {
+    grid-area: none;
+  }
+}
 </style>

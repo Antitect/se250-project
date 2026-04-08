@@ -98,10 +98,19 @@ export default {
       });
     },
     breedList() {
-      return this.$store.getters.getBreedList;
+      if (this.speciesFilter.trim().length === 0) {
+        return this.$store.getters.getBreedList;
+      } else {
+        return this.$store.getters.getBreedBySpeices[this.speciesFilter];
+      }
     },
     speciesList() {
       return this.$store.getters.getSpeciesList;
+    }
+  },
+  watch: {
+    speciesFilter() {
+      this.breedFilter = '';
     }
   },
   methods: {
@@ -126,6 +135,7 @@ section {
   display: flex;
   gap: 2ch;
   margin: 20px auto;
+  flex-wrap: wrap;
 }
 
 .filters > * {
@@ -143,8 +153,60 @@ section {
 }
 
 form {
-  display: grid;
+  display: flex;
   gap: 1ch;
-  grid-template-columns: 1fr 1fr 1fr 1fr max-content;
+  flex-direction: row;
+  align-items: center;
+  margin: auto;
+  padding: 0 1ch;
+}
+
+form > input {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: 0px;
+  max-width: 22%;
+}
+
+form > input[type="number"] {
+  max-width: 8ch;
+}
+
+form > button {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 800px) {
+  input[type="text"], input[type="number"], form > input[type="text"], form > input[type="number"] {
+    width: calc(100% - 1ch);
+    max-width: none;
+  }
+
+  form {
+    display: block;
+    padding: 0 1ch;
+  }
+
+  form > * {
+    display: block;
+    width: 100%;
+    margin-bottom: 1ch;
+  }
+
+  .filtersection {
+    position: static;
+  }
+
+  .filters {
+    display: block;
+    padding: 0 1ch;
+  }
+
+  .filters > * {
+    display: block;
+    width: 100%;
+    margin-bottom: 1ch;
+  }
 }
 </style>
