@@ -3,12 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 06, 2026 at 09:39 PM
+-- Generation Time: Apr 09, 2026 at 09:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
+SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -29,13 +30,14 @@ USE `animal_db`;
 --
 
 CREATE TABLE `Animals` (
-  `Animal_ID` int(11) NOT NULL,
-  `Name` text DEFAULT NULL,
-  `Species` text DEFAULT NULL,
-  `Breed` text DEFAULT NULL,
-  `Age` int(11) DEFAULT NULL,
-  `Adopted` tinyint(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `Animal_ID` int(3) NOT NULL,
+  `Name` tinytext NOT NULL DEFAULT '\'N/A\'',
+  `Species` tinytext NOT NULL,
+  `Breed` tinytext NOT NULL,
+  `Age` int(2) NOT NULL,
+  `Adopted` tinyint(1) NOT NULL,
+  CHECK (Age>=0)
+) ;
 
 --
 -- Dumping data for table `Animals`
@@ -66,7 +68,7 @@ ALTER TABLE `Animals`
 -- AUTO_INCREMENT for table `Animals`
 --
 ALTER TABLE `Animals`
-  MODIFY `Animal_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `Animal_ID` int(3) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
