@@ -1,19 +1,16 @@
 <template>
   <div class="home">
-    <section>
-      <h2>Intake new Animal</h2>
+    <CollapsableBox title="Intake New Animal">
       <form @submit.prevent="addAnimal">
         <input type="text" placeholder="Name" v-model="newAnimal.Name" required/>
         <input type="text" placeholder="Species" v-model="newAnimal.Species" required/>
         <input type="text" placeholder="Breed" v-model="newAnimal.Breed" required/>
         <input type="number" placeholder="Age" v-model.number="newAnimal.Age" required/>
-        <button type="submit">Add Animal</button>
+        <Button type="submit">Add Animal</Button>
       </form>
-      <hr/>
-    </section>
+    </CollapsableBox>
 
-    <section class="filtersection">
-      <h2>Filters</h2>
+    <CollapsableBox class="filtersection" title="Filters">
       <div class="filters">
         <input type="text" placeholder="Name" v-model="nameFilter"/>
 
@@ -35,8 +32,26 @@
           <label for="adoptedFilter">Show Adopted </label>
           <input type="checkbox" id="adoptedFilter" v-model="adoptedFilter"/>
         </div>
+
+        <div>
+          <label for="sortby">Sort By </label>
+          <select id="sortby" v-model="sortby">
+            <option value="name">Name</option>
+            <option value="age">Age</option>
+            <option value="species">Species</option>
+            <option value="breed">Breed</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sortorder">Sort Order </label>
+          <select id="sortorder" v-model="sortorder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
       </div>
-    </section>
+    </CollapsableBox>
 
     <section>
       <AnimalEntry v-for="(animal, index) in animals" :key="animal.Animal_ID" :animal="animal" :even="index & 1"/>
@@ -48,11 +63,15 @@
 <script>
 // @ is an alias to /src
 import AnimalEntry from '@/components/AnimalEntry.vue';
+import Button from '@/components/ButtonElement.vue';
+import CollapsableBox from '@/components/CollapsableBox.vue';
 
 export default {
   name: 'HomeView',
   components: {
-    AnimalEntry
+    AnimalEntry,
+    Button,
+    CollapsableBox
   },
   data() {
     return {
@@ -60,6 +79,8 @@ export default {
       speciesFilter: '',
       breedFilter: '',
       nameFilter: '',
+      sortby: 'name',
+      sortorder: 'asc',
       newAnimal: {
         Name: '',
         Species: '',
@@ -71,7 +92,7 @@ export default {
   },
   computed: {
     animals() {
-      return this.$store.getters.sortedAnimals.filter(animal => {
+      let filteredList = this.$store.getters.sortedAnimals.filter(animal => {
         let matched = true;
         if (this.nameFilter.trim().length > 0) {
           if (!animal.Name.trim().toLowerCase().startsWith(this.nameFilter.trim().toLowerCase())) {
@@ -96,6 +117,38 @@ export default {
         }
         return matched;
       });
+
+      filteredList.sort((a, b) => {
+        let aval, bval;
+        switch (this.sortby) {
+          case 'name':
+            aval = a.Name.trim().toLowerCase();
+            bval = b.Name.trim().toLowerCase();
+            break;
+          case 'age':
+            aval = a.Age;
+            bval = b.Age;
+            break;
+          case 'species':
+            aval = a.Species.trim().toLowerCase();
+            bval = b.Species.trim().toLowerCase();
+            break;
+          case 'breed':
+            aval = a.Breed.trim().toLowerCase();
+            bval = b.Breed.trim().toLowerCase();
+            break;
+        }
+
+        if (aval < bval) {
+          return this.sortorder === 'asc' ? -1 : 1;
+        } else if (aval > bval) {
+          return this.sortorder === 'asc' ? 1 : -1;
+        } else {
+          return 0;
+        }
+      });
+
+      return filteredList;
     },
     breedList() {
       if (this.speciesFilter.trim().length === 0) {
@@ -127,49 +180,43 @@ export default {
 </script>
 
 <style scoped>
-section {
+.home > * {
   margin: auto;
+  margin-bottom: 1ch;
 }
 
 .filters {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 2ch;
-  margin: 20px auto;
-  flex-wrap: wrap;
+  padding: 1ch 1ch 0 1ch;
 }
 
-.filters > * {
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 10px;
+.filters > div {
+  display: grid;
+  gap: 1ch;
+  grid-template-columns: max-content 1fr;
+}
+
+.filters > div > label {
+  text-align: right;
 }
 
 .filtersection {
   position: sticky;
   top: 0px;
   background-color: var(--white);
-
-  border-bottom: 1px solid var(--gray);
 }
 
 form {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) max-content;
+  width: 100%;
   gap: 1ch;
   flex-direction: row;
   align-items: center;
   margin: auto;
-  padding: 0 1ch;
-}
-
-form > input {
-  flex-grow: 0;
-  flex-shrink: 1;
-  flex-basis: 0px;
-  max-width: 22%;
-}
-
-form > input[type="number"] {
-  max-width: 8ch;
+  padding: 1ch 1ch 0 1ch;
 }
 
 form > button {
@@ -179,13 +226,13 @@ form > button {
 
 @media screen and (max-width: 800px) {
   input[type="text"], input[type="number"], form > input[type="text"], form > input[type="number"] {
-    width: calc(100% - 1ch);
+    width: calc(100% - 2ch);
     max-width: none;
   }
 
   form {
     display: block;
-    padding: 0 1ch;
+    padding: 0 0ch;
   }
 
   form > * {

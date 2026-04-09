@@ -3,25 +3,30 @@
     <h3>{{ animal.Name }}</h3>
     <p>Age: {{ animal.Age }}</p>
     <p :class="[animal.Adopted ? 'adopted' : 'available']">{{ animal.Adopted ? 'Adopted' : 'Available' }}</p>
-    <button @click="deleteAnimal" class="deletebutton">Delete</button>
+    <Button @click="deleteAnimal" class="deletebutton">Delete</Button>
     <p class="mobile-only">{{ animal.Species }}/{{ animal.Breed }}</p>
     <p class="no-mobile">Species: {{ animal.Species }}</p>
     <p class="no-mobile">Breed: {{ animal.Breed }}</p>
     <p class="none"></p>
-    <button v-if="animal.Adopted" class="returnbutton" @click="toggleAdopted(animal)">Return</button>
-    <button class="adoptbutton" v-else @click="toggleAdopted(animal)">Adopt</button>
+    <Button v-if="animal.Adopted" class="returnbutton" @click="toggleAdopted(animal)">Return</Button>
+    <Button class="adoptbutton" v-else @click="toggleAdopted(animal)">Adopt</Button>
   </div>
   <div class="delete_dialog" v-if="showDeleteDialog">
     <div class="delete_dialog_content">
       <p>Are you sure you want to delete {{ animal.Name }}?</p>
-      <button @click="confirmDelete">Yes</button>
-      <button @click="cancelDelete">No</button>
+      <Button @click="confirmDelete">Yes</Button>
+      <Button @click="cancelDelete">No</Button>
     </div>
   </div>
 </template>
 
 <script>
+import Button from '@/components/ButtonElement.vue';
+
 export default {
+  components: {
+    Button
+  },
   data() {
     return {
       showDeleteDialog: false
@@ -77,13 +82,11 @@ div > * {
 .deletebutton, .returnbutton, .delete_dialog_content button{
   background-color: var(--red);
   color: var(--white);
-  border-radius: 5px;
 }
 
 .adoptbutton, .delete_dialog_content > button:last-child {
   background-color: green;
   color: var(--white);
-  border-radius: 5px;
 }
 
 .mobile-only {
