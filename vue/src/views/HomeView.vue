@@ -1,15 +1,5 @@
 <template>
   <div class="home">
-    <CollapsableBox title="Intake New Animal">
-      <form @submit.prevent="addAnimal">
-        <input type="text" placeholder="Name" v-model="newAnimal.Name" required/>
-        <input type="text" placeholder="Species" v-model="newAnimal.Species" required/>
-        <input type="text" placeholder="Breed" v-model="newAnimal.Breed" required/>
-        <input type="number" placeholder="Age" v-model.number="newAnimal.Age" required/>
-        <Button type="submit">Add Animal</Button>
-      </form>
-    </CollapsableBox>
-
     <CollapsableBox class="filtersection" title="Filters">
       <div class="filters">
         <input type="text" placeholder="Name" v-model="nameFilter"/>
@@ -62,15 +52,13 @@
 
 <script>
 // @ is an alias to /src
-import AnimalEntry from '@/components/AnimalEntry.vue';
-import Button from '@/components/ButtonElement.vue';
+import AnimalEntry from '@/components/AnimalEntry2.vue';
 import CollapsableBox from '@/components/CollapsableBox.vue';
 
 export default {
   name: 'HomeView',
   components: {
     AnimalEntry,
-    Button,
     CollapsableBox
   },
   data() {
@@ -154,7 +142,7 @@ export default {
       if (this.speciesFilter.trim().length === 0) {
         return this.$store.getters.getBreedList;
       } else {
-        return this.$store.getters.getBreedBySpeices[this.speciesFilter];
+        return this.$store.getters.getBreedBySpeices[this.speciesFilter.toLowerCase()] ?? [];
       }
     },
     speciesList() {
@@ -164,16 +152,6 @@ export default {
   watch: {
     speciesFilter() {
       this.breedFilter = '';
-    }
-  },
-  methods: {
-    addAnimal() {
-      if (this.newAnimal.Name.trim().length === 0 || this.newAnimal.Species.trim().length === 0 || this.newAnimal.Breed.trim().length === 0 || this.newAnimal.Age === null || this.newAnimal.Age < 0) {
-        alert('Please fill in all fields');
-        return;
-      }
-      this.$store.dispatch('addAnimal', this.newAnimal);
-      this.newAnimal = { Name: '', Species: '', Breed: '', Age: null, Adopted: false };
     }
   }
 }
@@ -208,37 +186,10 @@ export default {
   background-color: var(--white);
 }
 
-form {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr) max-content;
-  width: 100%;
-  gap: 1ch;
-  flex-direction: row;
-  align-items: center;
-  margin: auto;
-  padding: 1ch 1ch 0 1ch;
-}
-
-form > button {
-  flex-grow: 0;
-  flex-shrink: 0;
-}
-
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1000px) {
   input[type="text"], input[type="number"], form > input[type="text"], form > input[type="number"] {
     width: calc(100% - 2ch);
     max-width: none;
-  }
-
-  form {
-    display: block;
-    padding: 0 0ch;
-  }
-
-  form > * {
-    display: block;
-    width: 100%;
-    margin-bottom: 1ch;
   }
 
   .filtersection {

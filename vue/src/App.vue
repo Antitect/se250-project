@@ -2,6 +2,7 @@
   <header>
     <h1><a href="/">Pet Shelter</a></h1>
   </header>
+  <nav-bar/>
   <div>
     <router-view/>
   </div>
@@ -9,8 +10,12 @@
 
 <script>
 import store from '@/store/index';
+import NavBar from './components/NavBar.vue';
 
 export default {
+  components: {
+    NavBar
+  },
   mounted() {
     store.dispatch('getAnimals');
   }
@@ -35,12 +40,12 @@ header {
 
 #app > div {
   background-color: white;
-  max-width: 800px;
+  max-width: 1000px;
   width: 80%;
   margin: auto;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1000px) {
   #app > div {
     width: 100%;
   }
@@ -77,7 +82,7 @@ html {
   background-color: var(--red);
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1000px) {
   input, select, option {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;

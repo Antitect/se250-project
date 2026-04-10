@@ -1,15 +1,26 @@
 <template>
   <div class="animal-entry" :even="even">
-    <h3>{{ animal.Name }}</h3>
-    <p>Age: {{ animal.Age }}</p>
-    <p :class="[animal.Adopted ? 'adopted' : 'available']">{{ animal.Adopted ? 'Adopted' : 'Available' }}</p>
-    <Button @click="deleteAnimal" class="deletebutton">Delete</Button>
-    <p class="mobile-only">{{ animal.Species }}/{{ animal.Breed }}</p>
-    <p class="no-mobile">Species: {{ animal.Species }}</p>
-    <p class="no-mobile">Breed: {{ animal.Breed }}</p>
-    <p class="none"></p>
-    <Button v-if="animal.Adopted" class="returnbutton" @click="toggleAdopted(animal)">Return</Button>
-    <Button class="adoptbutton" v-else @click="toggleAdopted(animal)">Adopt</Button>
+    <figure>
+      <img :src="`./uc/${animal.Animal_ID}.jpg` ?? fallbackImage" @error="setFallbackImage" alt="Animal Photo" />
+
+      <p :class="[animal.Adopted ? 'adopted' : 'available']">{{ animal.Adopted ? 'Adopted' : 'Available' }}</p>
+    </figure>
+
+    <div class="layout1">
+      <h3>{{ animal.Name }}</h3>
+
+      <p>Age: {{ animal.Age }}</p>
+
+      <p class="mobile-only">{{ animal.Species }}/{{ animal.Breed }}</p>
+      <p class="no-mobile">Species: {{ animal.Species }}</p>
+      <p class="no-mobile">Breed: {{ animal.Breed }}</p>
+
+
+      <Button @click="deleteAnimal" class="deletebutton">Delete</Button>
+
+      <Button v-if="animal.Adopted" class="returnbutton" @click="toggleAdopted(animal)">Return</Button>
+      <Button class="adoptbutton" v-else @click="toggleAdopted(animal)">Adopt</Button>
+    </div>
   </div>
   <div class="delete_dialog" v-if="showDeleteDialog">
     <div class="delete_dialog_content">
@@ -22,6 +33,7 @@
 
 <script>
 import Button from '@/components/ButtonElement.vue';
+import fallbackImage from '@/assets/sitting.png';
 
 export default {
   components: {
@@ -29,11 +41,17 @@ export default {
   },
   data() {
     return {
-      showDeleteDialog: false
+      showDeleteDialog: false,
+      fallbackImage
     }
   },
   props: ['animal', 'even'],
   methods: {
+    setFallbackImage(event) {
+      // Prevent infinite onerror loops if the fallback asset is missing.
+      event.target.onerror = null;
+      event.target.src = this.fallbackImage;
+    },
     deleteAnimal() {
       this.showDeleteDialog = true;
     },
@@ -54,21 +72,42 @@ export default {
 </script>
 
 <style scoped>
-div {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr min-content;
+.animal-entry {
+  display: flex;
   gap: 1ch;
-  padding: 0.5ch;
-  border: 1px solid var(--gray);
-
-  align-items:baseline;
+  padding: 1ch;
 }
 
-div[even='1'] {
+.animal-entry > figure {
+  flex-basis: 200px;
+}
+
+div.layout1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1ch;
+  padding: 0.5ch;
+
+  align-items:baseline;
+  flex-grow: 1;
+}
+
+figure {
+  margin: auto;
+  width: 200px;
+  grid-row: span 3;
+}
+
+img {
+  width: 150px;
+  height: 150px;
+}
+
+.animal-entry[even='1'] {
   background-color: var(--gray);
 }
 
-div > * {
+.animal-entry > * {
   margin: 0px;
 }
 
@@ -91,6 +130,7 @@ div > * {
 
 .mobile-only {
   display: none;
+  grid-column: span 2;
 }
 
 .delete_dialog {
@@ -137,38 +177,11 @@ div > * {
   }
 
   .animal-entry {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-template-areas: "name name name age age age"
-                        "speicies species species status status status"
-                        ". delete delete adopt adopt none";
+    display: block;
   }
-
-  h3 {
-    grid-area: name;
-  }
-
-  .animal-entry > p:nth-child(2) {
-    grid-area: age;
-  }
-
-  .animal-entry > p:nth-child(3) {
-    grid-area: status;
-  }
-
-  p.mobile-only {
-    grid-area: species;
-  }
-
-  .deletebutton {
-    grid-area: delete;
-  }
-
-  .adoptbutton, .returnbutton {
-    grid-area: adopt;
-  }
-
-  .none {
-    grid-area: none;
+  
+  .animal-entry > * {
+    margin: auto;
   }
 }
 </style>

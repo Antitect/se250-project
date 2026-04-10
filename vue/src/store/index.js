@@ -30,11 +30,11 @@ export default createStore({
     getBreedBySpeices(state) {
       let breedBySpecies = {};
       state.animals.forEach(animal => {
-        if (!breedBySpecies[animal.Species]) {
-          breedBySpecies[animal.Species] = [];
+        if (!breedBySpecies[animal.Species.toLowerCase()]) {
+          breedBySpecies[animal.Species.toLowerCase()] = [];
         }
-        if (!breedBySpecies[animal.Species].includes(animal.Breed)) {
-          breedBySpecies[animal.Species].push(animal.Breed);
+        if (!breedBySpecies[animal.Species.toLowerCase()].includes(animal.Breed)) {
+          breedBySpecies[animal.Species.toLowerCase()].push(animal.Breed);
         }
       });
 
@@ -76,8 +76,10 @@ export default createStore({
       // api call here
       let res = await true;// placeholder for successful response
 
+      payload.Animal_ID = Math.random(); // placeholder for generated ID
+
       if (res) {
-        context.commit('setAnimals', [payload]);
+        context.commit('setAnimals', [payload.animal]);
       }
 
       return res;
