@@ -2,6 +2,7 @@
 include "db.php";
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');// added for vue testing environment
 
 $id = $_POST['Animal_ID'] ?? '';
 

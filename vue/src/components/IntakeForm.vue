@@ -12,6 +12,7 @@
     </figure>
 
     <div class="layout2">
+      <p v-if="showSuccessMessage" class="success">Animal added successfully!</p>
       <label for="name">Name</label>
       <input type="text" id="name" v-model="Name" required/>
       <p class="error" v-if="errors.Name">{{ errors.Name }}</p>
@@ -66,7 +67,8 @@ export default {
         Breed: '',
         Age: '',
         Photo: ''
-      }
+      },
+      showSuccessMessage: false
     }
   },
   props: {
@@ -156,10 +158,11 @@ export default {
           Age: this.Age,
           Adopted: 0
         },
-        http:httpPayload
+        http: httpPayload
       });
 
       if (res) {
+        this.showSuccessMessage = true;
         this.Name = '';
         this.Species = '';
         this.Breed = '';
@@ -206,14 +209,23 @@ figure label * {
   cursor: pointer;
 }
 
-.error {
+p {
   font-size: 0.9rem;
   margin-top: -0.5ch;
   margin-bottom: 0.5ch;
-  background-color: yellow;
   grid-column: span 2;
-  border: 0.01rem solid var(--red);
   border-radius: 0.5rem;
+  color: black;
+}
+
+.success {
+  background-color: lightgreen;
+  border: 0.01rem solid darkgreen;
+}
+
+.error {
+  background-color: yellow;
+  border: 0.01rem solid var(--red);
 }
 
 #imagePreview {
