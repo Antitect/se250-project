@@ -6,7 +6,7 @@
           <span v-if="photo">Change Photo</span>
           <span v-else>Upload Photo</span>
         </div>
-        <input type="file" id="photo" @change="handleFileUpload" style="visibility:hidden"/>
+        <input type="file" id="photo" @change="handleFileUpload" style="visibility:hidden" accept="image/jpeg"/>
       </label><br/>
       <p class="error" v-if="errors.Photo">{{ errors.Photo }}</p>
     </figure>
@@ -17,11 +17,21 @@
       <p class="error" v-if="errors.Name">{{ errors.Name }}</p>
 
       <label for="species">Species</label>
-      <input type="text" id="species" v-model="Species" required/>
+      <select id="species" v-model="Species" required>
+        <option value="" disabled selected>Select a Species</option>
+        <option v-for="species in speciesList" :key="species" :value="species">
+          {{ species }}
+        </option>
+      </select>
       <p class="error" v-if="errors.Species">{{ errors.Species }}</p>
 
       <label for="breed">Breed</label>
-      <input type="text" id="breed" v-model="Breed" required/>
+      <select id="breed" v-model="Breed" required :disabled="Species === ''">
+        <option value="" disabled selected>Select a Breed</option>
+        <option v-for="breed in breedList" :key="breed" :value="breed">
+          {{ breed }}
+        </option>
+      </select>
       <p class="error" v-if="errors.Breed">{{ errors.Breed }}</p>
 
 
@@ -63,6 +73,17 @@ export default {
     image: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    breedList() {
+      let breeds = this.$store.getters.getBreedBySpeices[this.Species] ?? [];
+
+      breeds.sort();
+      return breeds;
+    },
+    speciesList() {
+      return this.$store.getters.getSpeciesList;
     }
   },
   methods: {
@@ -112,6 +133,10 @@ export default {
         } else {
           this.errors.Photo = '';
         }
+      }
+
+      if (this.errors.Name || this.errors.Species || this.errors.Breed || this.errors.Age || this.errors.Photo) {
+        return;
       }
 
       let httpPayload = new FormData();
@@ -202,9 +227,10 @@ figure label * {
 
 #imagePreview > span {
   display: block;
-  color: var(--white);
-  background-color: rgba(0, 0, 0, 0.5);
+  color: var(--blue);
+  background-color: rgba(255, 255, 255, 0.5);
   padding: 0.5ch;
   font-size: 1.2rem;
+  text-decoration: underline;
 }
 </style>

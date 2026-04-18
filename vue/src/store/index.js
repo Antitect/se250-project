@@ -4,45 +4,80 @@ export default createStore({
   state: {
     animals: [
       {Animal_ID: -1, Name: 'None', Species: 'None', Breed: 'None', Age: -1, Adopted: -1}
-    ]
+    ],
+    species: {
+      "Dog": [
+        "Golden Retriever",
+        "German Shepherd",
+        "Border Collie",
+        "Poodle",
+        "Labrador Retriver",
+        "Great Dane",
+        "Dachshund",
+        "Beagle"
+      ],
+      "Cat": [
+        "Tabby",
+        "Siamese",
+        "Persian",
+        "American Shorthair",
+        "American Longhair",
+        "Maine Coon",
+        "Sphynx"
+      ],
+      "Hamster": [
+        "Syrian",
+        "Chinese",
+        "Roborovski Dwarf",
+        "Campbell's Dwarf",
+        "Winter White Dwarf"
+      ],
+      "Rat": [
+        "Standard",
+        "Rex",
+        "Dumbo",
+        "Sphynx"
+      ],
+      "Rabbit": [
+        "Holland Lop",
+        "French Lop",
+        "Mini Lop",
+        "Netherland Dwarf",
+        "Flemish Giant",
+        "Mini Rex"
+      ],
+      "Snake": [
+        "Corn Snake",
+        "Ball Python",
+        "Rat Snake",
+        "Western Hognose",
+        "Milk Snake"
+      ]
+    }
   },
   getters: {
     getBreedList(state) {
       let breeds = [];
-      state.animals.forEach(animal => {
-        if (!breeds.includes(animal.Breed)) {
-          breeds.push(animal.Breed);
-        }
-      });
+      
+      for (let species in state.species) {
+        breeds.push(...state.species[species]);
+      }
+
       breeds.sort();
       return breeds;
     },
     getSpeciesList(state) {
       let species = [];
-      state.animals.forEach(animal => {
-        if (!species.includes(animal.Species)) {
-          species.push(animal.Species);
-        }
-      });
+      
+      for (let speciesName in state.species) {
+        species.push(speciesName);
+      }
+
       species.sort();
       return species;
     },
     getBreedBySpeices(state) {
-      let breedBySpecies = {};
-      state.animals.forEach(animal => {
-        if (!breedBySpecies[animal.Species.toLowerCase()]) {
-          breedBySpecies[animal.Species.toLowerCase()] = [];
-        }
-        if (!breedBySpecies[animal.Species.toLowerCase()].includes(animal.Breed)) {
-          breedBySpecies[animal.Species.toLowerCase()].push(animal.Breed);
-        }
-      });
-
-      for (let species in breedBySpecies) {
-        breedBySpecies[species].sort();
-      }
-
-      return breedBySpecies;
+      return state.species;
     },
     sortedAnimals(state) {
       let sorted = [...state.animals];

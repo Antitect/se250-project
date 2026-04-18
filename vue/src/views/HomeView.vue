@@ -40,6 +40,8 @@
             <option value="desc">Descending</option>
           </select>
         </div>
+
+        <button @click="resetFilter">Reset Filters</button>
       </div>
     </CollapsableBox>
 
@@ -142,11 +144,40 @@ export default {
       if (this.speciesFilter.trim().length === 0) {
         return this.$store.getters.getBreedList;
       } else {
-        return this.$store.getters.getBreedBySpeices[this.speciesFilter.toLowerCase()] ?? [];
+        let breeds = [];
+        for (let animal of this.$store.state.animals) {
+          if (this.$store.getters.getBreedBySpeices[this.speciesFilter].includes(animal.Breed) && !breeds.includes(animal.Breed)) {
+            breeds.push(animal.Breed);
+          }
+        }
+
+        breeds.sort();
+        return breeds ?? [];
       }
     },
     speciesList() {
-      return this.$store.getters.getSpeciesList;
+      let species = this.$store.getters.getSpeciesList;
+      let avialable = [];
+
+      for (let animal of this.$store.state.animals) {
+        if (!avialable.includes(animal.Species) && species.includes(animal.Species)) {
+          avialable.push(animal.Species);
+        }
+      }
+
+      avialable.sort();
+
+      return avialable;
+    }
+  },
+  methods: {
+    resetFilter() {
+      this.nameFilter = '';
+      this.speciesFilter = '';
+      this.breedFilter = '';
+      this.adoptedFilter = true;
+      this.sortby = 'name';
+      this.sortorder = 'asc';
     }
   },
   watch: {
