@@ -2,9 +2,11 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    api: './api/',
+    pendingRequest: false,
+    api: './api/',// The api endpoint for development
+    //api: './api/',// The api endpoint for deployment
     animals: [
-      {Animal_ID: -1, Name: 'None', Species: 'None', Breed: 'None', Age: -1, Adopted: -1}
+      {Animal_ID: -1, Name: 'None', Species: 'None', Breed: 'None', Age: -1, Adopted: -1}// If this is displayed something is wrong.
     ],
     species: {
       "Dog": [
@@ -99,6 +101,14 @@ export default createStore({
   },
   actions: {
     async deleteAnimal(context, _payload) {
+      if (context.state.pendingRequest) {
+        console.warn('Pending request in progress, skipping delete.');
+        return false;
+      }
+
+      context.state.pendingRequest = true;
+      let ret = false;
+
       let payload = new FormData();
       payload.append('Animal_ID', _payload);
 
@@ -111,14 +121,23 @@ export default createStore({
       // delete_animal.php returns a json object with message set on success and error on failure.
       if (res.message) {
         context.commit('deleteAnimal', _payload);
-        return true;
+        ret = true;
       } else {
         console.error('Error deleting animal:', res.error);
-        return false;
       }
+
+      context.state.pendingRequest = false;
+      return ret;
     },
     async addAnimal(context, payload) {
-      // api call here
+      if (context.state.pendingRequest) {
+        console.warn('Pending request in progress, skipping add.');
+        return false;
+      }
+
+      let ret = false;
+      context.state.pendingRequest = true;
+
       let res = await fetch(context.state.api + 'add_animal.php', {
         method: 'POST',
         body: payload.http
@@ -128,13 +147,22 @@ export default createStore({
       if (res.message) {
         payload.animal.Animal_ID = res.Animal_ID; // set the generated ID from the response
         context.commit('setAnimals', [payload.animal]);
-        return true;
+        ret = true;
       } else {
         console.error('Error adding animal:', res.error);
-        return false;
       }
+
+      context.state.pendingRequest = false;
+      return ret;
     },
     async getAnimals(context) {
+      if (context.state.pendingRequest) {
+        console.warn('Pending request in progress, skipping fetch.');
+        return false;
+      }
+
+      context.state.pendingRequest = true;
+
       // fetching code goes here.
       let res = await fetch(context.state.api + 'get_animals.php', )
         .then(response => response.json())
@@ -147,6 +175,52 @@ export default createStore({
         context.commit('clearAnimals');
         context.commit('setAnimals', res);
       }
+
+      context.state.pendingRequest = false;
+      return true;
+    },
+    async updateAnimal(context, payload) {
+      if (context.state.pendingRequest) {
+        console.warn('Pending request in progress, skipping update.');
+        return false;
+      }
+
+      context.state.pendingRequest = true;
+      let ret = false;
+      let formData = new FormData();
+
+      formData.append('Animal_ID', payload.Animal_ID);
+
+      let res = await fetch(context.state.api + 'delete_animal.php', {
+        method: 'POST',
+        body: formData
+      }).then(response => response.json()).catch(error => ['error', error]);
+
+      if (res.error) {
+        console.error('Error updating animal:', res.error);
+        context.state.pendingRequest = false;
+        return false;
+      }
+
+      formData.append('Name', payload.Name);
+      formData.append('Species', payload.Species);
+      formData.append('Breed', payload.Breed);
+      formData.append('Age', payload.Age);
+      formData.append('Adopted', payload.Adopted);
+
+      res = await fetch(context.state.api + 'add_animal.php', {
+        method: 'POST',
+        body: formData
+      }).then(response => response.json()).catch(error => ['error', error]);
+
+      if (res.message) {
+        context.commit('deleteAnimal', payload.Animal_ID);
+        context.commit('setAnimals', [payload]);
+        ret = true;
+      }
+
+      context.state.pendingRequest = false;
+      return ret;
     }
   },
   modules: {

@@ -14,7 +14,7 @@
     <div class="layout2">
       <p v-if="showSuccessMessage" class="success">Animal added successfully!</p>
       <label for="name">Name</label>
-      <input type="text" id="name" v-model="Name" required/>
+      <input type="text" id="name" v-model.trim="Name" required/>
       <p class="error" v-if="errors.Name">{{ errors.Name }}</p>
 
       <label for="species">Species</label>
@@ -41,7 +41,7 @@
       <p class="error" v-if="errors.Age">{{ errors.Age }}</p>
 
 
-      <Button type="submit" @click.prevent="addAnimal">Submit</Button>
+      <Button type="submit" @click.prevent="addAnimal" :disabled="submitting||submitted">Submit</Button>
     </div>
   </form>
 </template>
@@ -68,7 +68,9 @@ export default {
         Age: '',
         Photo: ''
       },
-      showSuccessMessage: false
+      showSuccessMessage: false,
+      submitted: false,
+      submitting: false,
     }
   },
   props: {
@@ -88,6 +90,29 @@ export default {
       return this.$store.getters.getSpeciesList;
     }
   },
+  watch: {
+    Name() {
+      this.showSuccessMessage = false;
+      this.submitted = false;
+    },
+    Species() {
+      this.showSuccessMessage = false;
+      this.submitted = false;
+      this.Breed = '';// reset breed when species changes.
+    },
+    Breed() {
+      this.showSuccessMessage = false;
+      this.submitted = false;
+    },
+    Age() {
+      this.showSuccessMessage = false;
+      this.submitted = false;
+    },
+    photo() {
+      this.showSuccessMessage = false;
+      this.submitted = false;
+    }
+  },
   methods: {
     handleFileUpload(event) {
       const file = event.target.files[0];
@@ -105,6 +130,8 @@ export default {
     },
 
     async addAnimal() {
+      this.submitting = true;
+
       if (this.Name.trim() === '') {
         this.errors.Name = 'Name is required.';
       } else {
@@ -123,7 +150,7 @@ export default {
         this.errors.Breed = '';
       }
 
-      if (this.Age === null || this.Age < 0 || this.Age > 30) {
+      if (this.Age === null || this.Age < 0 || this.Age > 30 || !Number.isInteger(this.Age)) {
         this.errors.Age = 'Age must be between 0 and 30.';
       } else {
         this.errors.Age = '';
@@ -138,6 +165,7 @@ export default {
       }
 
       if (this.errors.Name || this.errors.Species || this.errors.Breed || this.errors.Age || this.errors.Photo) {
+        this.submitting = false;
         return;
       }
 
@@ -162,14 +190,18 @@ export default {
       });
 
       if (res) {
-        this.showSuccessMessage = true;
         this.Name = '';
         this.Species = '';
         this.Breed = '';
         this.Age = null;
         this.photo = null;
         document.getElementById('imagePreview').style.backgroundImage = 'none';
+        await null;// race condition fix.
+        this.showSuccessMessage = true;
+        this.submitted = true;
       }
+
+      this.submitting = false;
     }
   }
 }
@@ -178,6 +210,12 @@ export default {
 <style scoped>
 button {
   grid-column: span 2;
+  background-color: lightblue;
+}
+
+button:disabled {
+  background-color: var(--gray);
+  cursor: not-allowed;
 }
 
 .layout1 {
@@ -224,7 +262,7 @@ p {
 }
 
 .error {
-  background-color: yellow;
+  background-color: red;
   border: 0.01rem solid var(--red);
 }
 

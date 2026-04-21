@@ -64,20 +64,7 @@ export default {
       let updatedAnimal = { ...animal, Adopted: !animal.Adopted };
       updatedAnimal.Adopted = !animal.Adopted;
 
-      let formData = new FormData();
-      formData.append('Name', updatedAnimal.Name);
-      formData.append('Species', updatedAnimal.Species);
-      formData.append('Breed', updatedAnimal.Breed);
-      formData.append('Age', updatedAnimal.Age);
-      formData.append('Adopted', updatedAnimal.Adopted);
-      formData.append('Animal_ID', updatedAnimal.Animal_ID);
-
-      console.log(updatedAnimal);
-
-      let res = await this.$store.dispatch('deleteAnimal', animal.Animal_ID);
-      if (res) {
-        await this.$store.dispatch('addAnimal', { animal: updatedAnimal, http: formData });
-      }
+      await this.$store.dispatch('updateAnimal', updatedAnimal);
     },
     confirmDelete() {
       this.$store.dispatch('deleteAnimal', this.animal.Animal_ID);
